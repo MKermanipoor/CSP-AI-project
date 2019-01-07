@@ -15,21 +15,34 @@ public class CSP {
     }
 
     public void run(){
-        recursiveBackTracking(new State(info));
+        State re = recursiveBackTracking(new State(info));
+        System.out.println("done");
     }
 
     private State recursiveBackTracking(State state){
         if (state.isComplete())
             return state;
 
-        int human = state.getNextHumanIndex();
-        State temp;
-        for (int fruit : state.getAvailableFruitForHuman(human)){
-            state.assign(human, fruit);
-            temp = recursiveBackTracking(state);
-            if (temp != null)
+//        int human = state.getNextHumanIndex();
+//        State temp;
+//        for (int fruit : state.getAvailableFruitForHuman(human)){
+//            state.assign(human, fruit);
+//            temp = recursiveBackTracking(state);
+//            if (temp != null)
+//                return temp;
+//            state.assign(0, fruit);
+//        }
+
+        int fruit = state.getNextFruitIndex();
+        if (fruit == -1)
+            return null;
+        State temp, result;
+        Integer[] available = state.getAvailableHumanForFruit(fruit);
+        for (int human : available){
+            result = new State(state, human, fruit);
+            temp = recursiveBackTracking(result);
+            if (temp != null && temp.isComplete())
                 return temp;
-            state.assign(0, fruit);
         }
         return null;
     }
