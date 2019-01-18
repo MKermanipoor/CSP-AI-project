@@ -43,13 +43,6 @@ public class Info {
         return fruitEnergy[fruitIndex];
     }
 
-    public boolean isNeighbor(int s, int d) {
-        if (!constraint.containsKey(s))
-            constraint.put(s, new HashSet<>());
-
-        return constraint.get(s).contains(d);
-    }
-
     public Set<Integer> getNeighbors(int s) {
         if (!constraint.containsKey(s))
             constraint.put(s, new HashSet<>());
@@ -79,7 +72,6 @@ public class Info {
         int b = SCANNER.nextInt();
         for (int i = 0; i < b; i++)
             info.addConstraint(SCANNER.nextInt(), SCANNER.nextInt());
-        System.out.println("done!");
         return info;
     }
 

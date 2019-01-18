@@ -67,17 +67,6 @@ public class State {
         this.getFruitsFromHuman(human).add(fruit);
 
         if (human == 0) {
-//            if (lastHuman == 0)
-//                return;
-
-
-//            domains.get(lastHuman).add(fruit);
-//            info.getNeighbors(human).iterator().forEachRemaining(new Consumer<Integer>() {
-//                @Override
-//                public void accept(Integer integer) {
-//                    domains.get(integer).addAll(info.getFruitIndexWithSameEnergy(info.getFruitEnergy(fruit)));
-//                }
-//            });
             return;
         }
 
@@ -92,12 +81,6 @@ public class State {
                 temp.removeAll(info.getNeighbors(human));
             }
         });
-//        info.getNeighbors(human).iterator().forEachRemaining(new Consumer<Integer>() {
-//            @Override
-//            public void accept(Integer integer) {
-//                domains.get(integer).removeAll(info.getFruitIndexWithSameEnergy(info.getFruitEnergy(fruit)));
-//            }
-//        });
     }
 
     public ArrayList<Integer> getFruitsFromHuman(int human) {
@@ -149,36 +132,51 @@ public class State {
         return this.fitness().hungry == 0;
     }
 
-//    public int getNextHumanIndex (){
-//        for (int i=1 ; i<=info.getHumanNumber() ; i++){
-//            if (domains.get(i).size() != 0)
-//                return i;
-//        }
-//        return -1;
-//    }
-//
-//    public Integer[] getAvailableFruitForHuman(int human){
-//        if (domains.get(human).size() == 0)
-//            return null;
-//        Integer[] result = new Integer[domains.get(human).size()];
-//        result = domains.get(human).toArray(result);
-//        return result;
-//    }
 
     public int getNextFruitIndex() {
+        int index = -1;
+        int indexSize = Integer.MAX_VALUE;
         for (int i = 1; i <= info.getFruitNumber(); i++) {
-            if (domains.get(i) != null && domains.get(i).size() != 0)
-                return i;
+            if (domains.get(i) == null || domains.get(i).size() == 0)
+                continue;
+
+            if (domains.get(i).size() < indexSize){
+                indexSize = domains.get(i).size();
+                index = i;
+            }
         }
-        return -1;
+        return index;
     }
 
     public Integer[] getAvailableHumanForFruit(int fruit) {
         if (!domains.containsKey(fruit))
             return null;
 
-        Integer[] result = new Integer[domains.get(fruit).size()];
-        result = domains.get(fruit).toArray(result);
+        Integer[] result;
+        PriorityQueue<Integer> humans = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return info.getNeighbors(o1).size() - info.getNeighbors(o2).size();
+            }
+        });
+
+        humans.addAll(domains.get(fruit));
+
+        result = new Integer[humans.size()];
+        result = humans.toArray(result);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder st = new StringBuilder();
+        for(int i=0 ; i<=info.getHumanNumber() ; i++){
+            st.append(i).append(" : ");
+            for (int fruit : getFruitsFromHuman(i)){
+                st.append(fruit).append(" ");
+            }
+            st.append("\n");
+        }
+        return st.toString();
     }
 }
